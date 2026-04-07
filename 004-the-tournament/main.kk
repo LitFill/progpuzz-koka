@@ -4,6 +4,18 @@ import std/os/file
 import std/os/path
 import std/text/parse
 
+// --- ANSI Escape Code Helpers ---
+fun ansi(s, code : string)
+    "\x1B[" ++ code ++ "m" ++ s ++ "\x1B[0m"
+
+fun bold    (s) s.ansi("1")
+fun red     (s) s.ansi("31")
+fun green   (s) s.ansi("32")
+fun yellow  (s) s.ansi("33")
+fun magenta (s) s.ansi("35")
+fun cyan    (s) s.ansi("36")
+// --------------------------------
+
 type element
     Fire
     Grass
@@ -15,9 +27,9 @@ fun element/show(e) match e
     Water -> "Water"
 
 fun element/pretty(e) match e
-    Fire  -> "🔥"
-    Grass -> "🌱"
-    Water -> "💧"
+    Fire  -> "🔥 Fire ".red
+    Grass -> "🌱 Grass".green
+    Water -> "💧 Water".cyan
 
 fun element/parser()
     val pfire  = fn() { pstring("Fire");  Fire  }
@@ -46,9 +58,9 @@ fun pokemon/show(pok)
     ")"
 
 fun pokemon/pretty(pok, name-pad = 0)
-    pok.name.pad-right(name-pad) ++ " : " ++
-    pok.element.pretty           ++ " = " ++
-    pok.power.show
+    pok.name.pad-right(name-pad).bold ++ " : " ++
+    pok.element.pretty                ++ " = " ++
+    pok.power.show.yellow
 
 fun pokemon/parser()
     val name    = many { alpha() } .string
@@ -85,15 +97,17 @@ fun battle/begin(poks : list<pokemon>)
             p.name.list.length
         .maximum
 
-    "== Pokemon Battle ==".println
+    // Mewarnai UI Turnamen
+    "== Pokemon Battle ==".magenta.bold.println
     ""                    .println
-    "Contestants: "       .println
+    "Contestants: "       .cyan.bold.println
+
     poks.foreach fn(p)
         "  - ".print
         p.println(pretty(_, pad))
     ""            .println
 
-    "The Winner: ".println
+    "The Winner: ".green.bold.println
     "  "          .print
     poks.battle.println(pretty(_))
 

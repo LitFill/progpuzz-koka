@@ -58,11 +58,6 @@ fun pokemon/parser()
     val power   = pnat()
     Pokemon(name, element, power)
 
-fun pokemon/from-csv(src)
-    src.slice.parse
-        pokemon/parser()
-    .maybe.expect("invalid data pokemon/from-csv(\""++src++"\")")
-
 fun pokemon/power-againts(a, b)
     a.power * a.element.multiplier(b.element)
 

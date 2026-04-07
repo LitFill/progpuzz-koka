@@ -82,6 +82,7 @@ fun pokemon/cmp-by-element(a, b)
 fun pokemon/fight(a, b)
     var pow-a := a.power
     var pow-b := b.power
+
     val cmp = cmp-by-element
     if   a >= b
     then pow-a := pow-a * 2
@@ -89,16 +90,53 @@ fun pokemon/fight(a, b)
 
     if pow-a >= pow-b then a else b
 
-fun main()
-    val poks = "battle2.csv"
-        .path
-        .read-text-file
-        .lines
-        .filter-map fn(ln)
-            if ln.is-empty then return Nothing
-            ln.slice.parse
-                pokemon/parser()
-            .maybe
+fun pokemon/battle(poks : list<pokemon>)
+    var res := []
+    var ps := poks
+    fun go()
+        while { ps.is-empty.not }
+            match ps
+                Cons(a, Cons(b, rest)) ->
+                    res := fight(a, b).Cons(res)
+                    ps := rest
+                _ -> ()
 
+        ps := res
+        res := []
+        if ps.length == 1 then return () else go()
+    go()
+    ps.head.expect("[ ERROR ] chunk: the winner is empty")
+
+fun battle/begin(poks : list<pokemon>)
+    val show = pokemon/pretty
+
+    "== Pokemon Battle ==".println
+    ""                    .println
+    "Contestants: "       .println
     poks.foreach fn(p)
-        p.println(pretty)
+        "  - ".print
+        p(name=p.name.pad-right(12)).println
+    ""            .println
+
+    "The Winner: ".println
+    "  "          .print
+    poks.battle.println
+
+    "".println
+
+fun battle/from-file(fname)
+    fname.path
+    .read-text-file
+    .lines
+    .filter-map fn(ln)
+        if ln.is-empty then return Nothing
+        ln.slice.parse
+            pokemon/parser()
+        .maybe
+
+fun main()
+    val battle1 = "battle1.csv".from-file
+    val battle2 = "battle2.csv".from-file
+
+    battle1.begin
+    battle2.begin

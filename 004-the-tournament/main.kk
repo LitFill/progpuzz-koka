@@ -99,7 +99,7 @@ fun pokemon/battle(poks : list<pokemon>)
                 Cons(a, Cons(b, rest)) ->
                     res := fight(a, b).Cons(res)
                     ps := rest
-                _ -> ()
+                _ -> return ()
 
         ps := res
         res := []

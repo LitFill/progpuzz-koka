@@ -63,9 +63,12 @@ fun pokemon/from-csv(src)
         pokemon/parser()
     .maybe.expect("invalid data pokemon/from-csv(\""++src++"\")")
 
+fun pokemon/power-againts(a, b)
+    a.power * a.element.multiplier(b.element)
+
 fun pokemon/fight(a, b)
-    val pow-a = a.power * a.element.multiplier(b.element)
-    val pow-b = b.power * b.element.multiplier(a.element)
+    val pow-a = a.power-againts(b)
+    val pow-b = b.power-againts(a)
 
     if   pow-a >= pow-b
     then a else b

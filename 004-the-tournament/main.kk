@@ -25,22 +25,11 @@ fun element/parser()
     val pwater = fn() { pstring("Water"); Water }
     [pfire, pgrass, pwater].choose
 
-fun element/(==)(a, b) match (a, b)
-    (Fire,  Fire)  -> True
-    (Grass, Grass) -> True
-    (Water, Water) -> True
-    _              -> False
-
-fun element/(<=)(a, b) match (a, b)
-    (Water, Fire)  -> False
-    (Grass, Water) -> False
-    (Fire,  Grass) -> False
-    _              -> True
-
-fun element/cmp(a, b : element)
-    if a == b then return Eq
-    if a <= b then return Lt
-    Gt
+fun element/multiplier(a, b) match (a, b)
+    (Water, Fire ) -> 2
+    (Fire,  Grass) -> 2
+    (Grass, Water) -> 2
+    _              -> 1
 
 struct pokemon
     name    : string
@@ -74,19 +63,12 @@ fun pokemon/from-csv(src)
         pokemon/parser()
     .maybe.expect("invalid data pokemon/from-csv(\""++src++"\")")
 
-fun pokemon/cmp-by-element(a, b)
-    cmp(a.element, b.element)
-
 fun pokemon/fight(a, b)
-    var pow-a := a.power
-    var pow-b := b.power
+    val pow-a = a.power * a.element.multiplier(b.element)
+    val pow-b = b.power * b.element.multiplier(a.element)
 
-    val cmp = cmp-by-element
-    if   a >= b
-    then pow-a := pow-a * 2
-    else pow-b := pow-b * 2
-
-    if pow-a >= pow-b then a else b
+    if   pow-a >= pow-b
+    then a else b
 
 fun pokemon/battle(poks : list<pokemon>)
     var res := []

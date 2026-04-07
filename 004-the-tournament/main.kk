@@ -56,11 +56,9 @@ fun pokemon/show(pok)
     pok.power.show   ++
     ")"
 
-fun pokemon/pretty(pok)
-    pok.name           ++
-    " : "              ++
-    pok.element.pretty ++
-    " = "              ++
+fun pokemon/pretty(pok, name-pad = 0)
+    pok.name.pad-right(name-pad) ++ " : " ++
+    pok.element.pretty           ++ " = " ++
     pok.power.show
 
 fun pokemon/parser()
@@ -108,19 +106,17 @@ fun pokemon/battle(poks : list<pokemon>)
     ps.head.expect("[ ERROR ] chunk: the winner is empty")
 
 fun battle/begin(poks : list<pokemon>)
-    val show = pokemon/pretty
-
     "== Pokemon Battle ==".println
     ""                    .println
     "Contestants: "       .println
     poks.foreach fn(p)
         "  - ".print
-        p(name=p.name.pad-right(12)).println
+        p(name=p.name.pad-right(12)).println(pretty(_, 12))
     ""            .println
 
     "The Winner: ".println
     "  "          .print
-    poks.battle.println
+    poks.battle.println(pretty(_))
 
     "".println
 

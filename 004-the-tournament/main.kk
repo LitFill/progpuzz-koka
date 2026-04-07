@@ -102,6 +102,7 @@ fun battle/from-file(fname)
     fname.path
     .read-text-file
     .lines
+    .map(trim)
     .filter-map fn(ln)
         if ln.is-empty then return Nothing
         ln.slice.parse

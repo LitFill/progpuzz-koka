@@ -73,22 +73,15 @@ fun pokemon/fight(a, b)
     if   pow-a >= pow-b
     then a else b
 
-fun pokemon/battle(poks : list<pokemon>)
-    var res := []
-    var ps := poks
-    fun go()
-        while { ps.is-empty.not }
-            match ps
-                Cons(a, Cons(b, rest)) ->
-                    res := fight(a, b).Cons(res)
-                    ps := rest
-                _ -> return ()
+fun pokemon/battle-round(poks) match poks
+    Cons(a, Cons(b, rest)) -> Cons(fight(a, b), rest.battle-round)
+    [a] -> [a]
+    Nil -> Nil
 
-        ps := res
-        res := []
-        if ps.length == 1 then return () else go()
-    go()
-    ps.head.expect("[ ERROR ] chunk: the winner is empty")
+fun pokemon/battle(poks : list<pokemon>) match poks
+    Nil -> "[ ERROR ] pokemon/battle: Contestants list is empty".throw
+    [winner] -> winner
+    _ -> poks.battle-round.battle
 
 fun battle/begin(poks : list<pokemon>)
     "== Pokemon Battle ==".println

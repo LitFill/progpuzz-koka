@@ -84,12 +84,18 @@ fun pokemon/battle(poks : list<pokemon>) match poks
     _ -> poks.battle-round.battle
 
 fun battle/begin(poks : list<pokemon>)
+    val pad =
+        poks
+        .map fn(p)
+            p.name.list.length
+        .maximum
+
     "== Pokemon Battle ==".println
     ""                    .println
     "Contestants: "       .println
     poks.foreach fn(p)
         "  - ".print
-        p(name=p.name.pad-right(12)).println(pretty(_, 12))
+        p.println(pretty(_, pad))
     ""            .println
 
     "The Winner: ".println
